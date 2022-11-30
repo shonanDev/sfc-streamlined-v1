@@ -1,0 +1,11 @@
+{
+    "name": "Extension B",
+    "version": "1.0.0",
+    "description": "gives some info",
+    "manifest_version": 3,
+    "author": "Kenta Medina",
+    "action":{
+        "default_popup": "index.html",
+        "default_title": "Latest Report"
+    }
+}
