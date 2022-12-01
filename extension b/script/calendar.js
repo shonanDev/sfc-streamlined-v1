@@ -71,6 +71,9 @@ function getEventsToday(date, courses) {
                 startTime.setHours(periodTimes.hour);
                 startTime.setMinutes(periodTimes.minute);
 
+                // Timezone +9
+                startTime.setHours(startTime.getHours() - 9);
+
                 const endTime = new Date(startTime);
                 endTime.setHours(endTime.getHours() + 1);
                 endTime.setMinutes(endTime.getMinutes() + 30);
@@ -84,6 +87,41 @@ function getEventsToday(date, courses) {
     });
 
     return events;
+}
+
+function pad0(num) {
+    if (num < 10) {
+        return `0${num}`;
+    }
+    return `${num}`;
+}
+
+function formatDate(date) {
+    return `${date.getFullYear()}${pad0(date.getMonth() + 1)}${pad0(date.getDate())}T`
+    + `${pad0(date.getHours())}${pad0(date.getMinutes())}${pad0(date.getSeconds())}Z`;
+}
+
+function generateICal(events) {
+    let iCal = `
+BEGIN:VCALENDAR
+PRODID:-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN
+VERSION:2.0`
+    events.forEach((event, index) => {
+        iCal += `
+BEGIN:VEVENT
+DTSTAMP:${formatDate(new Date())}
+UID:${event.course.title}${index}
+ORGANIZER:mailto:jsmith@example.com
+DTSTART:${formatDate(event.start)}
+DTEND:${formatDate(event.end)}
+STATUS:CONFIRMED
+SUMMARY:${event.course.title}
+END:VEVENT`;
+    });
+    iCal += `
+END:VCALENDAR
+    `;
+    return iCal;
 }
 
 const downloadCalendarFn = () => {
@@ -112,5 +150,7 @@ const downloadCalendarFn = () => {
         courses.push(courseObj);
     });
     console.log(courses);
-    console.log(getEventsThisSemester(courses));
+    const iCal = generateICal(getEventsThisSemester(courses));
+    console.log(iCal);
+    window.open( "data:text/calendar;charset=utf8," + iCal);
 };
