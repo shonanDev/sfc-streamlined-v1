@@ -1,0 +1,20 @@
+.sfc-streamlined-menu {
+    background-color: #A5D6A7;
+    padding: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    margin-bottom: 1rem;
+}
+.sfc-streamlined-menu button {
+    background-color: #fff;
+    padding: .5em 1em;
+    cursor: pointer;
+    border-radius: 3px;
+    border: none;
+}
+.sfc-streamlined-menu h2 {
+    margin: 0;
+    line-height: 2rem;
+    font-weight: bold;
+}

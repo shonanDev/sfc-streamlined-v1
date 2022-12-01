@@ -1,11 +1,18 @@
 {
-    "name": "Extension B",
+    "name": "SFC Streamlined",
     "version": "1.0.0",
-    "description": "gives some info",
+    "description": "Tools for your student life",
     "manifest_version": 3,
     "author": "Kenta Medina",
     "action":{
         "default_popup": "index.html",
         "default_title": "Latest Report"
-    }
+    },
+    "content_scripts": [
+        {
+            "matches": ["https://*.keio.ac.jp/*"],
+            "css": ["style/menu.css"],
+            "js": ["script/calendar.js", "script/menu.js"]
+        }
+    ]
 }
