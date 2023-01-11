@@ -1,4 +1,4 @@
-.sfc-streamlined-menu {
+#sfc-streamlined-menu {
     background-color: #A5D6A7;
     padding: 1em;
     display: flex;
@@ -6,15 +6,17 @@
     align-content: center;
     margin-bottom: 1rem;
 }
-.sfc-streamlined-menu button {
+#sfc-streamlined-menu button {
     background-color: #fff;
     padding: .5em 1em;
     cursor: pointer;
     border-radius: 3px;
     border: none;
+    margin-left: 1rem;
 }
-.sfc-streamlined-menu h2 {
+#sfc-streamlined-menu h2 {
     margin: 0;
     line-height: 2rem;
     font-weight: bold;
+    flex: 1;
 }

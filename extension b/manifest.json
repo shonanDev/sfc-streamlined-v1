@@ -12,7 +12,11 @@
         {
             "matches": ["https://*.keio.ac.jp/*"],
             "css": ["style/menu.css"],
-            "js": ["script/calendar.js", "script/menu.js"]
+            "js": [
+                "script/grades.js",
+                "script/calendar.js",
+                "script/menu.js"
+            ]
         }
     ]
 }
