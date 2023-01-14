@@ -35,6 +35,51 @@ const periods = [
     }
 ];
 
+const holidayList = {
+    2022: {
+        0: [],
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: [],
+        6: [],
+        7: [],
+        8: [],
+        9: [],
+        10: [],
+        11: []
+    },
+    2023: {
+        0: [10],
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: [],
+        6: [],
+        7: [],
+        8: [],
+        9: [],
+        10: [],
+        11: [21,22,23,24,25,26,27]
+    },
+    2024: {
+        0: [10],
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: [],
+        6: [],
+        7: [],
+        8: [],
+        9: [],
+        10: [],
+        11: []
+    }
+};
+
 const startOfSemester = new Date('2022-10-01');
 const endOfSemester = new Date('2023-01-25');
 
@@ -54,7 +99,9 @@ function getEventsThisSemester(courses) {
     const events = [];
     let day = startOfSemester;
     while (day <= endOfSemester) {
-        events.push(...getEventsToday(day, courses));
+        if (!isHoliday(day)) {
+            events.push(...getEventsToday(day, courses));
+        }
         day.setDate(day.getDate() + 1);
     }
     return events;
@@ -154,3 +201,12 @@ const downloadCalendarFn = () => {
     console.log(iCal);
     window.open( "data:text/calendar;charset=utf8," + iCal);
 };
+
+function isHoliday (date) {
+  // 年月日を取得
+  const y = date.getFullYear();
+  const m = date.getMonth();
+  const d = date.getDate();
+  // 祝日リストに日付が含まれるかどうか調べ、結果を返す
+  return holidayList[y][m].indexOf(d) !== -1;
+}

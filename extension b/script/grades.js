@@ -173,5 +173,3 @@ function getWarningHtml(subjects) {
 
     return html;
 }
-
-generateGradeReportFn();
