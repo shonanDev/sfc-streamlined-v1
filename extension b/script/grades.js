@@ -36,27 +36,19 @@ const generateGradeReportFn = () => {
     document.querySelector('#sfc-streamlined-content').innerHTML = getWarningHtml(subjects);
 };
 
-function getFields(subjects) {
-    const fields = {};
-    subjects.forEach(subject => {
-        const field = subject.field;
-        if (!(field in fields)) {
-            fields[field] = 0;
-        }
-        fields[field]++;
-    });
-    return fields;
-}
-
-function countCredits(subjects, filter) {
+function countCredits(subjects) {
     return subjects
-        .filter(filter)
         .map(subject => subject.credits)
         .reduce((a, b) => a + b, 0);
 }
 
+function filterCourses(subjects, filter) {
+    return subjects
+        .filter(filter);
+}
+
 function countCreditsByFields(subjects, fields) {
-    return countCredits(subjects, subject => fields.some(field => subject.field.includes(field)));
+    return filterCourses(subjects, subject => fields.some(field => subject.field.includes(field)));
 }
 
 function getWarnings(subjects) {
@@ -72,90 +64,95 @@ const requirements = {
     '1 Advancing to the Second Year': [
         subjects => {
             const introductoryCredits = countCreditsByFields(subjects, ['01-01-01']);
-            if (introductoryCredits < 1) {
-                return `❌ You need to take your respective introductory course (PM / EI)`;
+            if (countCredits(introductoryCredits) < 1) {
+                return buildValidationResult(`❌ You need to take your respective introductory course (PM / EI)`, introductoryCredits);
             }
-            return '✅ You have absolved all introductory courses';
+            return buildValidationResult('✅ You have absolved all introductory courses', introductoryCredits);
         },
         subjects => {
             const wellnessCredits = countCreditsByFields(subjects, ['01-05-01']);
-            if (wellnessCredits < 2) {
-                return `❌ You need to take PE1 and Physical and Mental Health courses`;
+            if (countCredits(wellnessCredits) < 2) {
+                return buildValidationResult(`❌ You need to take PE1 and Physical and Mental Health courses`, wellnessCredits);
             }
-            return '✅ You have taken PE1 and Wellness class';
+            return buildValidationResult('✅ You have taken PE1 and Wellness class', wellnessCredits);
         },
     ],
     '2 Advancing to the Third Year': [
         subjects => {
             const ds1 = countCreditsByFields(subjects, ['01-03-01']);
             const ds2 = countCreditsByFields(subjects, ['01-03-02']);
-            if (ds1 < 2 || ds2 < 2) {
-                return `❌ You need to take Data Science 1 + 2 courses`;
+            const ds = ds1.concat(ds2);
+            if (countCredits(ds1) < 2 || countCredits(ds2) < 2) {
+                return buildValidationResult(`❌ You need to take Data Science 1 + 2 courses`, ds);
             }
-            return '✅ You have taken Data Science 1 + 2';
+            return buildValidationResult('✅ You have taken Data Science 1 + 2', ds);
         },
         subjects => {
             const fit = countCreditsByFields(subjects, ['01-04-01']);
-            if (fit < 4) {
-                return `❌ You need to take have at least 4 credits for FIT courses`;
+            if (countCredits(fit) < 4) {
+                return buildValidationResult(`❌ You need to take have at least 4 credits for FIT courses`, fit);
             }
-            return '✅ You have taken FIT courses';
+            return buildValidationResult('✅ You have taken FIT courses', fit);
         },
         subjects => {
             const languageCredits = countCreditsByFields(subjects, languages);
-            if (languageCredits < 8) {
-                return `❌ You need to have at least 8 credits from language subjects`;
+            if (countCredits(languageCredits) < 8) {
+                return buildValidationResult(`❌ You need to have at least 8 credits from language subjects`, languageCredits);
             }
-            return '✅ You have taken language courses';
+            return buildValidationResult('✅ You have taken language courses', languageCredits);
         },
     ],
     '3 Advancing to the Fourth Year': [
         subjects => {
             const fundamentalCredits = countCreditsByFields(subjects, ['FUNDAMENTAL SUBJECTS']);
-            if (fundamentalCredits < 30) {
-                return `❌ Not enough credits of fundamental subjects, ${fundamentalCredits} / 30`;
+            if (countCredits(fundamentalCredits) < 30) {
+                return buildValidationResult(`❌ Not enough credits of fundamental subjects, ${countCredits(fundamentalCredits)} / 30`, fundamentalCredits);
             }
-            return '✅ You have at least 30 credits in fundamental subjects';
+            return buildValidationResult('✅ You have at least 30 credits in fundamental subjects', fundamentalCredits);
         },
         subjects => {
             const peCredits = countCreditsByFields(subjects, ['01-05-02']);
-            if (peCredits < 2) {
-                return `❌ You need to finish both PE2 and PE3`;
+            if (countCredits(peCredits) < 2) {
+                return buildValidationResult(`❌ You need to finish both PE2 and PE3`, peCredits);
             }
-            return '✅ You have finished both PE2 and PE3';
+            return buildValidationResult('✅ You have finished both PE2 and PE3', peCredits);
         },
         subjects => {
             const seminarCredits = countCreditsByFields(subjects, ['03-01-01']);
-            if (seminarCredits < 2) {
-                return `❌ You need take at least one seminar`;
+            if (countCredits(seminarCredits) < 2) {
+                return buildValidationResult(`❌ You need take at least one seminar`, seminarCredits);
             }
-            return '✅ You have taken at least one seminar';
+            return buildValidationResult('✅ You have taken at least one seminar', seminarCredits);
         },
     ],
     '4 Graduation': [
         subjects => {
-            const totalCredits = countCredits(subjects, () => true);
-            if (totalCredits < 124) {
-                return `❌ Not enough credits, ${totalCredits} / 124 in total`;
+            const totalCredits = filterCourses(subjects, () => true);
+            if (countCredits(totalCredits) < 124) {
+                return buildValidationResult(`❌ Not enough credits, ${countCredits(totalCredits)} / 124 in total`, totalCredits);
             }
-            return '✅ Congrats, you have at least 124 credits';
+            return buildValidationResult('✅ Congrats, you have at least 124 credits', totalCredits);
         },
         subjects => {
             const gpCredits = countCreditsByFields(subjects, ['03-01-02']);
-            if (gpCredits < 4) {
-                return `❌ You need to complete GP1 and GP2`;
+            if (countCredits(gpCredits) < 4) {
+                return buildValidationResult(`❌ You need to complete GP1 and GP2`, gpCredits);
             }
-            return '✅ If you see this message, you have graduated already';
+            return buildValidationResult('✅ If you see this message, you have graduated already', gpCredits);
         },
         subjects => {
             const advancedCredits = countCreditsByFields(subjects, ['02-01-01', '02-02-01']);
-            if (advancedCredits < 30) {
-                return `❌ You need to have at least 30 credits from advanced subjects`;
+            if (countCredits(advancedCredits) < 30) {
+                return buildValidationResult(`❌ You need to have at least 30 credits from advanced subjects`, advancedCredits);
             }
-            return '✅ You have at least 30 credits from advanced subjects';
+            return buildValidationResult('✅ You have at least 30 credits from advanced subjects', advancedCredits);
         }
     ]
 };
+
+function buildValidationResult(message, courses) {
+    return {message, courses};
+}
 
 function getWarningHtml(subjects) {
     const warnings = getWarnings(subjects);
@@ -164,7 +161,13 @@ function getWarningHtml(subjects) {
         html += `<h3>${level}</h3>`;
         html += `<ul>`;
         warnings[level].forEach(message => {
-            html += `<li>${message}</li>`;
+            html += `<li>
+${message.message}
+<br>
+<small>
+${message.courses.map(course => `${course.name} <strong style="background-color: yellow;">(${course.credits})</strong>`).join(', ')}
+</small>
+</li>`;
         })
         html += `</ul>`;
     });
